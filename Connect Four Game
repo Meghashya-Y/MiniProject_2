@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+#define ROWS 6
+#define COLS 7
+
+void printBoard(char board[ROWS][COLS]) {
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            printf("| %c ", board[i][j]);
+        }
+        printf("|\n");
+    }
+    printf("  1   2   3   4   5   6   7 \n\n");
+}
+
+int dropPiece(char board[ROWS][COLS], int row, int col, char piece) {
+    if (row < 0 || row >= ROWS || col < 0 || col >= COLS || board[row][col] != ' ')
+        return 0; // Invalid move
+    board[row][col] = piece;
+    return 1;
+}
+
+int checkWin(char board[ROWS][COLS], char piece) {
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            if (j + 3 < COLS && board[i][j] == piece && board[i][j + 1] == piece &&
+                board[i][j + 2] == piece && board[i][j + 3] == piece) return 1;
+            if (i + 3 < ROWS && board[i][j] == piece && board[i + 1][j] == piece &&
+                board[i + 2][j] == piece && board[i + 3][j] == piece) return 1;
+            if (i + 3 < ROWS && j + 3 < COLS && board[i][j] == piece && board[i + 1][j + 1] == piece &&
+                board[i + 2][j + 2] == piece && board[i + 3][j + 3] == piece) return 1;
+            if (i - 3 >= 0 && j + 3 < COLS && board[i][j] == piece && board[i - 1][j + 1] == piece &&
+                board[i - 2][j + 2] == piece && board[i - 3][j + 3] == piece) return 1;
+        }
+    }
+    return 0;
+}
+
+int main() {
+    char board[ROWS][COLS];
+    for (int i = 0; i < ROWS; i++)
+        for (int j = 0; j < COLS; j++)
+            board[i][j] = ' ';
+
+    int turn = 0, row, col;
+    char players[2] = {'X', 'O'};
+
+    while (1) {
+        printBoard(board);
+        printf("Player %d (%c), choose a row (1-6) and column (1-7): ", turn + 1, players[turn]);
+        scanf("%d %d", &row, &col);
+        
+        if (dropPiece(board, row - 1, col - 1, players[turn])) {
+            if (checkWin(board, players[turn])) {
+                printBoard(board);
+                printf("Player %d (%c) wins!\n", turn + 1, players[turn]);
+                break;
+            }
+            turn = 1 - turn;
+        } else {
+            printf("Invalid move, try again.\n");
+        }
+    }
+    return 0;
+}
